@@ -1,0 +1,272 @@
+import React, { useState } from 'react';
+import { Gift, Sparkles, Loader2, ArrowLeft, Copy, Check } from 'lucide-react';
+
+const validCodes = [
+  'CODE-X7K9M2', 'CODE-P4J8N1', 'CODE-W3Q6R5', 'CODE-Z8L2H9', 'CODE-B5V7C4',
+  'CODE-F9T3K1', 'CODE-M6D8P2', 'CODE-Y1N4J7', 'CODE-R3S9W6', 'CODE-H7G2L5',
+  'CODE-K4X8T1', 'CODE-N9C6V3', 'CODE-Q2M7P8', 'CODE-W5J1R4', 'CODE-L8F3H9',
+  'CODE-T6B2N7', 'CODE-P1K9D5', 'CODE-V4R8M2', 'CODE-C7W3J6', 'CODE-G9L5T1',
+  'CODE-J2N8P4', 'CODE-X6H1K9', 'CODE-M3F7V5', 'CODE-R8D2W6', 'CODE-K1T4N9',
+  'CODE-L5P8C3', 'CODE-W9J6H2', 'CODE-B4M1R7', 'CODE-N7V3K5', 'CODE-T2G8D1',
+  'CODE-H6C4P9', 'CODE-F1L7M3', 'CODE-P9K2J8', 'CODE-V5W6N4', 'CODE-R3T7H1',
+  'CODE-M8D5K9', 'CODE-J4C1P6', 'CODE-L7N3W2', 'CODE-K9H8T5', 'CODE-G2V4R1'
+];
+
+const products = [
+  { id: 1, name: '[1만원] Roblox 기프트 카드', price: '₩10,000', robux: '800 Robux', image: 'https://i.imgur.com/06hAwVq.jpg' },
+  { id: 2, name: '[3만원] Roblox 기프트 카드', price: '₩30,000', robux: '2,400 Robux', image: 'https://i.imgur.com/06hAwVq.jpg' },
+  { id: 3, name: '[5만원] Roblox 기프트 카드', price: '₩50,000', robux: '4,500 Robux', image: 'https://i.imgur.com/06hAwVq.jpg' },
+  { id: 4, name: '[10만원] Roblox 기프트 카드', price: '₩100,000', robux: '10,000 Robux', image: 'https://i.imgur.com/06hAwVq.jpg' },
+  { id: 5, name: '[20만원] Roblox 기프트 카드', price: '₩200,000', robux: '22,500 Robux', image: 'https://i.imgur.com/06hAwVq.jpg' }
+];
+
+export default function RobloxGiftSite() {
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [codeInput, setCodeInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [giftCode, setGiftCode] = useState('');
+  const [showPrank, setShowPrank] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [error, setError] = useState('');
+
+  const generateGiftCode = () => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const length = Math.floor(Math.random() * 8) + 8; // 8~15자리
+    let code = 'RBX';
+    for (let i = 0; i < length; i++) {
+      code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return code;
+  };
+
+  const handleConfirm = () => {
+    if (!codeInput.trim()) return;
+    
+    // 유효한 코드인지 확인
+    if (!validCodes.includes(codeInput.trim())) {
+      setError('유효하지 않은 코드입니다. 다시 확인해주세요.');
+      return;
+    }
+    
+    setError('');
+    setIsLoading(true);
+    const loadingTime = Math.floor(Math.random() * 14000) + 6000;
+    
+    setTimeout(() => {
+      setGiftCode(generateGiftCode());
+      setIsLoading(false);
+    }, loadingTime);
+  };
+
+  const handleProductClick = (product) => {
+    setSelectedProduct(product);
+    setCodeInput('');
+    setGiftCode('');
+    setShowPrank(false);
+  };
+
+  const handleBack = () => {
+    setSelectedProduct(null);
+    setCodeInput('');
+    setGiftCode('');
+    setShowPrank(false);
+    setError('');
+  };
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(giftCode);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  if (selectedProduct) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 text-white p-4 md:p-8 overflow-hidden relative">
+        {/* Animated background stars */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute w-1 h-1 bg-white rounded-full top-1/4 left-1/4 animate-pulse"></div>
+          <div className="absolute w-1 h-1 bg-white rounded-full top-1/3 left-2/3 animate-pulse" style={{animationDelay: '0.5s'}}></div>
+          <div className="absolute w-1 h-1 bg-white rounded-full top-2/3 left-1/2 animate-pulse" style={{animationDelay: '1s'}}></div>
+          <div className="absolute w-1 h-1 bg-white rounded-full top-3/4 left-1/3 animate-pulse" style={{animationDelay: '1.5s'}}></div>
+          <div className="absolute w-2 h-2 bg-purple-400 rounded-full top-1/2 left-1/4 animate-pulse" style={{animationDelay: '0.8s'}}></div>
+          <div className="absolute w-2 h-2 bg-blue-400 rounded-full top-1/5 left-3/4 animate-pulse" style={{animationDelay: '1.3s'}}></div>
+          
+          <div className="absolute w-96 h-96 bg-purple-600 rounded-full blur-3xl opacity-20 -top-48 -left-48 animate-pulse"></div>
+          <div className="absolute w-96 h-96 bg-blue-600 rounded-full blur-3xl opacity-20 -bottom-48 -right-48 animate-pulse"></div>
+          <div className="absolute w-64 h-64 bg-pink-500 rounded-full blur-3xl opacity-10 top-1/2 left-1/2 animate-pulse" style={{animationDelay: '0.7s'}}></div>
+        </div>
+
+        <div className="max-w-2xl mx-auto relative z-10">
+          <button 
+            onClick={handleBack}
+            className="mb-8 px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-xl backdrop-blur-sm transition-all shadow-lg shadow-purple-500/50 flex items-center gap-2 group"
+          >
+            <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+            돌아가기
+          </button>
+
+          <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-2xl rounded-3xl p-8 shadow-2xl border border-white/20 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-purple-500/30 to-transparent rounded-full blur-3xl"></div>
+            
+            <div className="relative z-10">
+              <div className="flex items-center justify-center mb-6">
+                <div className="bg-gradient-to-r from-purple-500 to-blue-500 p-3 rounded-2xl shadow-lg shadow-purple-500/50">
+                  <Gift className="w-8 h-8" />
+                </div>
+              </div>
+
+              <h2 className="text-3xl md:text-4xl font-bold mb-3 text-center bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
+                {selectedProduct.name}
+              </h2>
+              
+              <p className="text-center text-purple-300 text-lg mb-8">{selectedProduct.robux}</p>
+
+              {!isLoading && !giftCode && (
+                <>
+                  <div className="mb-6 text-center">
+                    <p className="text-lg text-gray-300 mb-2">발급된 코드를 입력해주세요</p>
+                    <p className="text-sm text-gray-400">아래 인증 코드를 입력하시면 기프트 카드가 발급됩니다</p>
+                  </div>
+
+                  <div className="mb-6">
+                    <label className="block text-sm font-medium mb-3 text-gray-300">Code</label>
+                    <input
+                      type="text"
+                      value={codeInput}
+                      onChange={(e) => {
+                        setCodeInput(e.target.value);
+                        setError('');
+                      }}
+                      className="w-full px-6 py-4 bg-white/5 border-2 border-purple-500/30 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 transition-all backdrop-blur-sm text-lg"
+                      placeholder="코드를 입력하세요..."
+                      onKeyPress={(e) => e.key === 'Enter' && handleConfirm()}
+                    />
+                    {error && (
+                      <p className="mt-2 text-red-400 text-sm">{error}</p>
+                    )}
+                  </div>
+
+                  <button
+                    onClick={handleConfirm}
+                    disabled={!codeInput.trim()}
+                    className="w-full py-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 disabled:from-gray-600 disabled:to-gray-600 rounded-xl font-bold text-lg transition-all shadow-xl shadow-purple-500/50 hover:shadow-purple-500/70 hover:scale-[1.02] disabled:scale-100 disabled:cursor-not-allowed"
+                  >
+                    확인
+                  </button>
+                </>
+              )}
+
+              {isLoading && (
+                <div className="text-center py-12">
+                  <div className="relative inline-block mb-6">
+                    <div className="w-20 h-20 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin"></div>
+                    <Sparkles className="w-8 h-8 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-purple-400 animate-pulse" />
+                  </div>
+                  <p className="text-2xl font-bold mb-2 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">제품 준비중...</p>
+                  <p className="text-gray-400">기프트 카드를 생성하고 있습니다</p>
+                </div>
+              )}
+
+              {giftCode && (
+                <div className="text-center py-8">
+                  <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full mb-6 animate-bounce shadow-lg shadow-green-500/50">
+                    <Check className="w-10 h-10" />
+                  </div>
+                  <p className="text-2xl font-bold mb-6 bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">발급 완료!</p>
+                  
+                  <div className="bg-gradient-to-r from-purple-900/50 to-blue-900/50 backdrop-blur-sm rounded-2xl p-6 border-2 border-purple-500/50 mb-4">
+                    <p className="text-sm text-gray-400 mb-2">기프트 카드 코드</p>
+                    <div className="flex items-center justify-center gap-3">
+                      <p className="text-3xl font-mono font-bold tracking-wider text-transparent bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text">{giftCode}</p>
+                      <button
+                        onClick={copyToClipboard}
+                        className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-all"
+                        title="복사"
+                      >
+                        {copied ? <Check className="w-5 h-5 text-green-400" /> : <Copy className="w-5 h-5" />}
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <p className="text-sm text-gray-400">Roblox 웹사이트에서 코드를 사용하세요</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 text-white p-4 md:p-8 overflow-hidden relative">
+      {/* Animated background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute w-1 h-1 bg-white rounded-full top-1/4 left-1/4 animate-pulse"></div>
+        <div className="absolute w-1 h-1 bg-white rounded-full top-1/3 left-2/3 animate-pulse" style={{animationDelay: '0.5s'}}></div>
+        <div className="absolute w-1 h-1 bg-white rounded-full top-2/3 left-1/2 animate-pulse" style={{animationDelay: '1s'}}></div>
+        <div className="absolute w-1 h-1 bg-white rounded-full top-3/4 left-1/3 animate-pulse" style={{animationDelay: '1.5s'}}></div>
+        <div className="absolute w-1 h-1 bg-white rounded-full top-1/5 left-3/5 animate-pulse" style={{animationDelay: '0.3s'}}></div>
+        <div className="absolute w-2 h-2 bg-purple-400 rounded-full top-1/2 left-1/4 animate-pulse" style={{animationDelay: '0.8s'}}></div>
+        <div className="absolute w-2 h-2 bg-blue-400 rounded-full top-1/5 left-3/4 animate-pulse" style={{animationDelay: '1.3s'}}></div>
+        
+        <div className="absolute w-96 h-96 bg-purple-600 rounded-full blur-3xl opacity-20 -top-48 -left-48 animate-pulse"></div>
+        <div className="absolute w-96 h-96 bg-blue-600 rounded-full blur-3xl opacity-20 -bottom-48 -right-48 animate-pulse"></div>
+        <div className="absolute w-80 h-80 bg-pink-500 rounded-full blur-3xl opacity-15 top-1/3 right-1/4 animate-pulse" style={{animationDelay: '0.5s'}}></div>
+      </div>
+
+      <div className="max-w-6xl mx-auto relative z-10">
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center justify-center mb-6">
+            <div className="bg-gradient-to-r from-purple-600 to-blue-600 p-4 rounded-3xl shadow-2xl shadow-purple-500/50 animate-pulse">
+              <Gift className="w-12 h-12" />
+            </div>
+          </div>
+          <h1 className="text-5xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
+            Roblox 기프트 카드
+          </h1>
+          <p className="text-xl text-gray-400">원하는 상품을 선택하세요</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {products.map((product, index) => (
+            <div
+              key={product.id}
+              onClick={() => handleProductClick(product)}
+              className="group cursor-pointer bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl rounded-3xl p-6 shadow-2xl border border-white/20 hover:border-purple-500/50 transition-all hover:scale-105 hover:shadow-purple-500/50 relative overflow-hidden"
+              style={{animationDelay: `${index * 0.1}s`}}
+            >
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-500/20 to-transparent rounded-full blur-2xl group-hover:scale-150 transition-transform"></div>
+              
+              <div className="relative z-10">
+                <div className="mb-4 overflow-hidden rounded-2xl shadow-lg">
+                  <img 
+                    src={product.image} 
+                    alt={product.name}
+                    className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
+                </div>
+                
+                <div className="flex items-center gap-2 mb-3">
+                  <Sparkles className="w-5 h-5 text-purple-400" />
+                  <h3 className="text-xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+                    {product.name}
+                  </h3>
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <p className="text-2xl font-bold text-white">{product.price}</p>
+                  <p className="text-sm text-purple-300">{product.robux}</p>
+                </div>
+                
+                <div className="mt-4 py-3 bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl text-center font-bold group-hover:from-purple-700 group-hover:to-blue-700 transition-all shadow-lg">
+                  선택하기
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
