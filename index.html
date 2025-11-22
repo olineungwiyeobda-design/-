@@ -64,7 +64,7 @@
             </svg>
         );
 
-        const codesByProduct = {
+        const initialCodes = {
           1: ['CODE-X7K9M2','CODE-P4J8N1','CODE-W3Q6R5','CODE-Z8L2H9','CODE-B5V7C4','CODE-F9T3K1','CODE-M6D8P2','CODE-Y1N4J7','CODE-R3S9W6','CODE-H7G2L5','CODE-K4X8T1','CODE-N9C6V3','CODE-Q2M7P8','CODE-W5J1R4','CODE-L8F3H9','CODE-T6B2N7','CODE-P1K9D5','CODE-V4R8M2','CODE-C7W3J6','CODE-G9L5T1','CODE-J2N8P4','CODE-X6H1K9','CODE-M3F7V5','CODE-R8D2W6','CODE-K1T4N9','CODE-L5P8C3','CODE-W9J6H2','CODE-B4M1R7','CODE-N7V3K5','CODE-T2G8D1','CODE-H6C4P9','CODE-F1L7M3','CODE-P9K2J8','CODE-V5W6N4','CODE-R3T7H1','CODE-M8D5K9','CODE-J4C1P6','CODE-L7N3W2','CODE-K9H8T5','CODE-G2V4R1'],
           2: ['CODE-3W-A1B2C3','CODE-3W-D4E5F6','CODE-3W-G7H8I9','CODE-3W-J1K2L3','CODE-3W-M4N5O6','CODE-3W-P7Q8R9','CODE-3W-S1T2U3','CODE-3W-V4W5X6','CODE-3W-Y7Z8A9','CODE-3W-B1C2D3','CODE-3W-E4F5G6','CODE-3W-H7I8J9','CODE-3W-K1L2M3','CODE-3W-N4O5P6','CODE-3W-Q7R8S9','CODE-3W-T1U2V3','CODE-3W-W4X5Y6','CODE-3W-Z7A8B9','CODE-3W-C1D2E3','CODE-3W-F4G5H6'],
           3: ['CODE-5W-QW1ER2','CODE-5W-TY3UI4','CODE-5W-OP5AS6','CODE-5W-DF7GH8','CODE-5W-JK9LZ1','CODE-5W-XC2VB3','CODE-5W-NM4QW5','CODE-5W-ER6TY7','CODE-5W-UI8OP9','CODE-5W-AS1DF2','CODE-5W-GH3JK4','CODE-5W-LZ5XC6','CODE-5W-VB7NM8','CODE-5W-PL9OK0','CODE-5W-IJ1UH2','CODE-5W-YG3TF4','CODE-5W-RD5ES6','CODE-5W-WA7QZ8','CODE-5W-SX9DC0','CODE-5W-FV1GB2','CODE-5W-HN3JM4','CODE-5W-KL5PO6','CODE-5W-IU7YT8','CODE-5W-RE9WQ1','CODE-5W-ZA2XS3'],
@@ -89,6 +89,7 @@
           const [error, setError] = useState('');
           const [userIP, setUserIP] = useState('');
           const [usedCodes, setUsedCodes] = useState({});
+          const [codesByProduct, setCodesByProduct] = useState(initialCodes);
 
           // IP 가져오기
           React.useEffect(() => {
@@ -99,9 +100,7 @@
           }, []);
 
           const getStock = (productId) => {
-            const allCodes = codesByProduct[productId] || [];
-            const used = Object.values(usedCodes).flat();
-            return allCodes.filter(code => !used.includes(code)).length;
+            return codesByProduct[productId]?.length || 0;
           };
 
           const generateGiftCode = () => {
@@ -117,9 +116,18 @@
           const handleConfirm = () => {
             if (!codeInput.trim()) return;
             
+            const code = codeInput.trim();
+            // 유효한 코드인지 확인 (현재 남아있는 코드에서)
             const validCodes = codesByProduct[selectedProduct.id] || [];
-            if (!validCodes.includes(codeInput.trim())) {
+            
+            if (!validCodes.includes(code)) {
               setError('유효하지 않은 코드입니다. 다시 확인해주세요.');
+              return;
+            }
+            
+            // 해당 IP가 이미 코드를 사용했는지 확인
+            if (usedCodes[userIP] && usedCodes[userIP].length > 0) {
+              setError('이미 코드를 사용하셨습니다. IP당 1회만 사용 가능합니다.');
               return;
             }
             
@@ -128,6 +136,18 @@
             const loadingTime = Math.floor(Math.random() * 14000) + 6000;
             
             setTimeout(() => {
+              // 코드 사용 기록
+              setUsedCodes(prev => ({
+                ...prev,
+                [userIP]: [...(prev[userIP] || []), code]
+              }));
+              
+              // 해당 제품에서 사용된 코드 제거 (재고 감소)
+              setCodesByProduct(prev => ({
+                ...prev,
+                [selectedProduct.id]: prev[selectedProduct.id].filter(c => c !== code)
+              }));
+              
               setGiftCode(generateGiftCode());
               setIsLoading(false);
             }, loadingTime);
