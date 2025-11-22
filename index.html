@@ -73,11 +73,11 @@
         };
 
         const products = [
-          { id: 1, name: '[1만원] Roblox 기프트 카드', price: '₩10,000', robux: '800 Robux', image: 'https://images.rbxcdn.com/d572cc8714e0ec771ad8268977880ddf.png' },
-          { id: 2, name: '[3만원] Roblox 기프트 카드', price: '₩30,000', robux: '2,400 Robux', image: 'https://images.rbxcdn.com/d572cc8714e0ec771ad8268977880ddf.png' },
-          { id: 3, name: '[5만원] Roblox 기프트 카드', price: '₩50,000', robux: '4,500 Robux', image: 'https://images.rbxcdn.com/d572cc8714e0ec771ad8268977880ddf.png' },
-          { id: 4, name: '[10만원] Roblox 기프트 카드', price: '₩100,000', robux: '10,000 Robux', image: 'https://images.rbxcdn.com/d572cc8714e0ec771ad8268977880ddf.png' },
-          { id: 5, name: '[20만원] Roblox 기프트 카드', price: '₩200,000', robux: '22,500 Robux', image: 'https://images.rbxcdn.com/d572cc8714e0ec771ad8268977880ddf.png' }
+          { id: 1, name: '[1만원] Roblox 기프트 카드', price: '₩10,000', robux: '800 Robux', image: 'https://i.imgur.com/06hAwVq.jpg' },
+          { id: 2, name: '[3만원] Roblox 기프트 카드', price: '₩30,000', robux: '2,400 Robux', image: 'https://i.imgur.com/06hAwVq.jpg' },
+          { id: 3, name: '[5만원] Roblox 기프트 카드', price: '₩50,000', robux: '4,500 Robux', image: 'https://i.imgur.com/06hAwVq.jpg' },
+          { id: 4, name: '[10만원] Roblox 기프트 카드', price: '₩100,000', robux: '10,000 Robux', image: 'https://i.imgur.com/06hAwVq.jpg' },
+          { id: 5, name: '[20만원] Roblox 기프트 카드', price: '₩200,000', robux: '22,500 Robux', image: 'https://i.imgur.com/06hAwVq.jpg' }
         ];
 
         function RobloxGiftSite() {
@@ -87,8 +87,22 @@
           const [giftCode, setGiftCode] = useState('');
           const [copied, setCopied] = useState(false);
           const [error, setError] = useState('');
+          const [userIP, setUserIP] = useState('');
+          const [usedCodes, setUsedCodes] = useState({});
 
-          const getStock = (productId) => codesByProduct[productId]?.length || 0;
+          // IP 가져오기
+          React.useEffect(() => {
+            fetch('https://api.ipify.org?format=json')
+              .then(res => res.json())
+              .then(data => setUserIP(data.ip))
+              .catch(() => setUserIP('unknown-' + Math.random().toString(36).substr(2, 9)));
+          }, []);
+
+          const getStock = (productId) => {
+            const allCodes = codesByProduct[productId] || [];
+            const used = Object.values(usedCodes).flat();
+            return allCodes.filter(code => !used.includes(code)).length;
+          };
 
           const generateGiftCode = () => {
             const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
