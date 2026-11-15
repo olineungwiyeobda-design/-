@@ -1,437 +1,554 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Roblox 기프트 카드</title>
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HAVE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<script>if(/[?&]auto=1/.test(location.search))document.documentElement.classList.add("auto");</script>
+<style>
+:root{
+  --bg:#f6f7fb; --card:#ffffff; --line:#e4e7ef; --text:#171a26; --mute:#7c8296;
+  --ink:#171a26; --ink-hover:#2b3044; --ok:#22c55e; --okd:#16a34a; --err:#dc2626;
+  --font:"Plus Jakarta Sans","Pretendard Variable","Pretendard","Noto Sans KR","Malgun Gothic","Segoe UI",system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:transparent;overflow:hidden}
+body{display:grid;place-items:center;background:transparent;font-family:var(--font);color:var(--text);padding:16px}
+
+.app{position:relative;width:370px;max-width:100%;height:510px;background:var(--bg);border:1px solid var(--line);border-radius:16px;overflow:hidden;user-select:none;box-shadow:0 2px 14px #2a356038;
+  transition:width .7s cubic-bezier(.65,0,.25,1)}
+.app.open{width:720px}
+:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+
+/* ---------- 로그인 ---------- */
+.login{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg);z-index:30;padding:0 36px;
+  transition:opacity .4s ease,transform .4s ease,visibility 0s .4s}
+.login.leave{opacity:0;transform:scale(.96);visibility:hidden;pointer-events:none}
+.wbtns{display:flex;gap:8px}
+.login .wbtns{position:absolute;top:14px;right:14px}
+.wbtns button{width:28px;height:28px;border:0;border-radius:8px;background:#0000000a;color:var(--mute);cursor:pointer;font-size:15px;line-height:1;font-family:inherit;transition:background .15s,color .15s}
+.wbtns button:hover{background:#00000014;color:var(--text)}
+.wbtns .x:hover{background:#ef4444;color:#fff}
+.login h1{font-size:46px;font-weight:800;letter-spacing:8px;padding-left:8px;margin-bottom:8px}
+.login .sub{color:var(--mute);font-size:13px;font-weight:500;margin-bottom:26px;text-align:center}
+.pw{position:relative;width:100%}
+.field::-ms-reveal,.field::-ms-clear{display:none}
+.field{width:100%;height:46px;border:1px solid var(--line);border-radius:11px;background:#fff;padding:0 46px;font:600 14px var(--font);color:var(--text);outline:none;text-align:center}
+.field::placeholder{color:#a3a8ba;font-weight:500}
+.eye{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:32px;height:32px;border:0;border-radius:8px;background:none;color:var(--mute);cursor:pointer;display:grid;place-items:center;transition:color .15s,background .15s}
+.eye:hover{color:var(--text);background:#0000000a}
+.eye svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.eye .off{display:none}.eye.on .off{display:block}.eye.on .see{display:none}
+.field.err{border-color:var(--err);box-shadow:0 0 0 3px #dc262618;animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-3px)}}
+.msg{height:18px;margin:0 0 10px;font-size:12.5px;font-weight:600;color:var(--err);opacity:0;transition:opacity .2s}
+.msg.show{opacity:1}
+
+.lbtn{position:relative;margin-top:20px;width:100%;height:46px;border:0;border-radius:11px;background:var(--ink);color:#fff;font:700 14px var(--font);cursor:pointer;overflow:hidden;transition:background .2s,transform .05s}
+.lbtn:hover{background:var(--ink-hover)}.lbtn:active{transform:translateY(1px)}
+.lbtn[disabled]{cursor:default;background:var(--ink-hover)}
+/* 하단 테두리를 따라 부드럽게 지나가는 막대 */
+.lbtn .track{position:absolute;left:0;right:0;bottom:0;height:3px;overflow:hidden;background:#ffffff26;opacity:0;transition:opacity .35s ease}
+.lbtn .track::after{content:"";position:absolute;top:0;bottom:0;left:0;width:34%;background:#fff;border-radius:3px;transform:translateX(-110%);opacity:0}
+.lbtn.load .track{opacity:1}
+.lbtn.load .track::after{animation:sweep 1.6s cubic-bezier(.45,.05,.4,1) infinite}
+@keyframes sweep{
+  0%{transform:translateX(-110%);opacity:0}
+  18%{opacity:1}
+  82%{opacity:1}
+  100%{transform:translateX(300%);opacity:0}
+}
+
+/* ---------- 메인 ---------- */
+.shell{position:absolute;left:0;top:0;bottom:0;width:720px;display:grid;grid-template-columns:68px 1fr;grid-template-rows:minmax(0,1fr);opacity:0;transform:scale(1.02);visibility:hidden;
+  transition:opacity .5s ease,transform .5s ease,visibility 0s .5s}
+.shell.show{opacity:1;transform:none;visibility:visible;transition:opacity .55s ease .35s,transform .55s ease .35s,visibility 0s}
+.rail{background:#fff;border-right:1px solid var(--line);display:flex;flex-direction:column;align-items:center;padding:16px 0 14px;gap:8px}
+.nav{width:42px;height:42px;border:0;border-radius:12px;background:none;color:var(--mute);cursor:pointer;display:grid;place-items:center;position:relative;transition:background .2s,color .2s}
+.nav svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.nav:hover{color:var(--text);background:#0000000a}
+.nav.on{color:var(--ink);background:#0000000f}
+.nav::before{content:"";position:absolute;left:-13px;top:10px;bottom:10px;width:3px;border-radius:2px;background:var(--ink);transform:scaleY(0);transition:transform .25s}
+.nav.on::before{transform:scaleY(1)}
+.grow{flex:1}.ver{font-size:11px;color:var(--mute);font-weight:700}
+
+.main{display:flex;flex-direction:column;min-width:0;min-height:0}
+.top{display:flex;align-items:center;height:54px;padding:0 18px 0 22px;gap:10px}
+.top h1{font-size:17px;font-weight:800;letter-spacing:-.2px;transition:opacity .14s,transform .14s}
+.top h1.swap{opacity:0;transform:translateY(-4px)}
+.top .date{margin-left:auto;color:var(--mute);font-size:12.5px;font-weight:500}
+.body{position:relative;flex:1;padding:4px 22px 20px;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto minmax(0,1fr);gap:12px;min-height:0}
+.pane{display:none}.pane.on{display:contents}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;box-shadow:0 1px 2px #1a1f3a0a}
+.dev{grid-column:1/-1;grid-row:1/-1}
+.top .wbtns{margin-left:auto}
+.logcard{grid-column:1/-1;grid-row:1/-1;display:flex;flex-direction:column;padding:0;min-height:0;overflow:hidden}
+
+.pane.on>.card{animation:paneIn .38s cubic-bezier(.2,.7,.2,1) both}
+.pane.on>.card:nth-child(2){animation-delay:.05s}
+.pane.on>.card:nth-child(3){animation-delay:.1s}
+.pane.out>.card{animation:paneOut .16s ease-in both!important}
+@keyframes paneIn{from{opacity:0;transform:translateX(var(--dx,18px))}to{opacity:1;transform:none}}
+@keyframes paneOut{to{opacity:0;transform:translateX(calc(var(--dx,18px) * -.6))}}
+.shell:not(.show) .pane.on>.card{animation:none}
+
+/* 상태 + 빛나는 점 */
+.status{grid-column:1/-1;display:flex;align-items:center;gap:14px;position:relative;z-index:5}
+.dot{position:relative;margin-top:2px;width:9px;height:9px;border-radius:50%;background:#22c55e;flex:none;box-shadow:0 0 4px 1px #22c55e99}
+.dot::after{content:"";position:absolute;inset:-4px;border-radius:50%;background:#22c55e;filter:blur(6px);opacity:.35;will-change:opacity;animation:glow 2.6s ease-in-out infinite}
+@keyframes glow{0%,100%{opacity:.3}50%{opacity:.75}}
+.status .t{font-weight:700;font-size:14px}.status .s{color:var(--mute);font-size:12.5px;margin-top:2px}
+
+.dd{margin-left:auto;position:relative}
+.dd-btn{display:flex;align-items:center;gap:8px;min-width:116px;justify-content:space-between;height:34px;padding:0 12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--text);font:600 13px var(--font);cursor:pointer}
+.dd-btn:hover{border-color:#c9cdde}
+.dd-btn:focus,.dd-btn:focus-visible{outline:none}
+.dd.sm .dd-btn{height:30px;min-width:124px;font-size:12.5px}
+.dd.sm .dd-list{min-width:124px}
+.dd-btn svg{width:14px;height:14px;stroke:var(--mute);fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s}
+.dd.open .dd-btn svg{transform:rotate(180deg)}
+.dd-list{position:absolute;z-index:20;max-height:208px;overflow:auto;right:0;top:calc(100% + 6px);width:100%;min-width:116px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:4px;box-shadow:0 10px 28px #1a1f3a24;opacity:0;transform:translateY(-6px);pointer-events:none;transition:all .16s;list-style:none}
+.dd.open .dd-list{opacity:1;transform:none;pointer-events:auto}
+.dd-list li{padding:8px 10px;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.dd-list li:hover{background:#0000000a}
+.dd-list li[aria-selected="true"]::after{content:"";width:6px;height:6px;border-radius:50%;background:var(--ink)}
+
+.left{display:flex;flex-direction:column}
+.card.raise{position:relative;z-index:7}
+.kv .dd-btn span{color:var(--text);font-weight:600}
+.kv{display:flex;align-items:center;justify-content:space-between;font-size:13.5px;padding:7px 0;border-bottom:1px dashed var(--line)}
+.kv:last-of-type{border-bottom:0}
+.kv span:first-child{color:var(--mute);font-weight:500}.kv span:last-child{font-weight:700}
+.actions{margin-top:auto;display:flex;flex-direction:column;align-items:center;gap:10px}
+.btn{width:100%;height:42px;border:0;border-radius:11px;font:700 14px var(--font);color:#fff;cursor:pointer;background:var(--ink);transition:background .15s,transform .05s}
+.btn:hover{background:var(--ink-hover)}.btn:active{transform:translateY(1px)}
+.btn[disabled]{opacity:.55;cursor:default;transform:none}
+.logbtn{display:inline-flex;align-items:center;gap:7px;height:30px;padding:0 14px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--mute);font:600 12.5px var(--font);cursor:pointer;transition:all .15s}
+.logbtn:hover{border-color:var(--ink);color:var(--ink)}
+.logbtn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+.right{display:flex;flex-direction:column;min-height:0;padding:8px 8px 8px 16px}
+.tlist{flex:1;min-height:0;overflow-y:auto;padding-right:10px}
+.tlist::-webkit-scrollbar{width:6px}
+.tlist::-webkit-scrollbar-track{background:#eef0f6;border-radius:3px}
+.tlist::-webkit-scrollbar-thumb{background:#c2c7d8;border-radius:3px}
+.tlist::-webkit-scrollbar-thumb:hover{background:#a9afc4}
+.opt{display:flex;align-items:center;justify-content:space-between;padding:15px 2px;font-size:13px;font-weight:700;letter-spacing:.3px;border-bottom:1px solid #eef0f6;transition:color .2s}
+.opt:last-child{border-bottom:0}
+.opt.off{color:var(--mute)}
+.sw{width:38px;height:22px;border-radius:11px;background:#d9dcea;position:relative;cursor:pointer;transition:background .2s;flex:none}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 3px #0003;transition:left .2s}
+.sw.on{background:var(--ink)}.sw.on::after{left:19px}
+.seed-t{font-size:12.5px;color:var(--mute);margin:10px 0 6px;font-weight:500}
+.seed{display:flex;gap:8px}
+.seed input{flex:1;min-width:0;height:36px;border-radius:10px;border:1px solid var(--line);background:#fafbff;color:var(--text);padding:0 12px;font:600 14px var(--font);outline:none}
+.seed input:focus{border-color:var(--ink);box-shadow:0 0 0 3px #171a2614}
+.sq{width:36px;height:36px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--text);cursor:pointer;display:grid;place-items:center}
+.sq:hover{border-color:var(--ink)}
+.sq svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---------- 로그 보기 ---------- */
+.logview{position:absolute;left:22px;right:22px;top:4px;bottom:20px;z-index:8;display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 10px 30px #1a1f3a1a;
+  opacity:0;transform:translateY(14px) scale(.985);visibility:hidden;pointer-events:none;transition:opacity .25s ease,transform .25s ease,visibility 0s .25s}
+.logview.show{opacity:1;transform:none;visibility:visible;pointer-events:auto;transition:opacity .28s ease,transform .28s cubic-bezier(.2,.7,.2,1),visibility 0s}
+.lv-head{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.lv-head h2{font-size:14px;font-weight:800;line-height:1}
+.lv-head .cnt{font-size:11.5px;font-weight:700;line-height:1;color:var(--mute);background:#0000000a;border-radius:999px;padding:4px 8px;position:relative;top:1px}
+.lv-head .sp{flex:1}
+.sbtn{height:30px;padding:0 14px;border-radius:9px;font:700 12.5px var(--font);cursor:pointer;transition:all .15s}
+.sbtn.ghost{border:1px solid var(--line);background:#fff;color:var(--text)}
+.sbtn.ghost:hover{border-color:#dc2626;color:#dc2626}
+.sbtn.fill{border:1px solid var(--ink);background:var(--ink);color:#fff}
+.sbtn.fill:hover{background:var(--ink-hover)}
+.lv-list{flex:1;overflow:auto;padding:8px 14px;font-size:13px;line-height:1.5}
+.lv-list::-webkit-scrollbar{width:6px}.lv-list::-webkit-scrollbar-thumb{background:#d6d9e6;border-radius:3px}
+.ln{display:flex;gap:10px;padding:5px 0;border-bottom:1px dashed #eceef5;animation:lnIn .25s ease both}
+.ln:last-child{border-bottom:0}
+.ln .tm{color:var(--mute);font-weight:600;font-variant-numeric:tabular-nums;flex:none}
+.ln .tx{font-weight:600;word-break:break-word}
+.ln.ok .tx{color:var(--okd)}.ln.warn .tx{color:#c2410c}
+@keyframes lnIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.empty{height:100%;display:grid;place-items:center;color:var(--mute);font-weight:600;font-size:13px}
+
+.modal{position:absolute;inset:0;z-index:35;display:grid;place-items:center;background:#171a2666;opacity:0;visibility:hidden;transition:opacity .2s ease,visibility 0s .2s}
+.modal.show{opacity:1;visibility:visible;transition:opacity .2s ease}
+.mbox{width:290px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:24px 20px 18px;text-align:center;box-shadow:0 20px 50px #1a1f3a40;transform:translateY(10px) scale(.97);transition:transform .25s cubic-bezier(.2,.7,.2,1)}
+.modal.show .mbox{transform:none}
+.mt{font-weight:800;font-size:15px}
+.ms{color:var(--mute);font-size:13px;font-weight:500;margin:6px 0 20px}
+.mb{display:flex;gap:10px;justify-content:center}
+.mb .sbtn{height:36px;min-width:92px;font-size:13px}
+.mb .sbtn.ghost:hover{border-color:var(--ink);color:var(--ink)}
+.toast{position:absolute;left:50%;bottom:18px;transform:translate(-50%,20px);background:#171a26;color:#fff;padding:9px 15px;border-radius:10px;font-size:12.5px;font-weight:600;opacity:0;transition:all .25s;pointer-events:none;z-index:40}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+/* 선택창 목록 스크롤바 = 오른쪽 패널 스크롤바와 동일 */
+.dd-list::-webkit-scrollbar{width:6px}
+.dd-list::-webkit-scrollbar-track{background:#eef0f6;border-radius:3px}
+.dd-list::-webkit-scrollbar-thumb{background:#c2c7d8;border-radius:3px}
+.dd-list::-webkit-scrollbar-thumb:hover{background:#a9afc4}
+html.native,html.native body{background:var(--bg)}
+html.native body{padding:0}
+html.native .app,html.native .app.open{width:100%;max-width:none;height:100%;border:0;border-radius:0;box-shadow:none;transition:none}
+html.auto .login{display:none}
+html.auto .shell{opacity:1;transform:none;visibility:visible;transition:none}
+html.native .shell{left:50%;margin-left:-360px}
+html.native body::after{content:"";position:fixed;inset:0;border:1px solid var(--line);pointer-events:none;z-index:999}
+/* ---------- Dark mode ---------- */
+:root[data-theme="dark"]{color-scheme:dark;--bg:#0f111a;--card:#171a26;--line:#272b3b;--text:#e8eaf2;--mute:#8d93a8;--ink:#4b5266;--ink-hover:#5a6278;--err:#f87171}
+[data-theme="dark"] body{background:transparent}
+[data-theme="dark"] .app{box-shadow:0 2px 14px #000a}
+[data-theme="dark"] .wbtns button{background:#ffffff14}
+[data-theme="dark"] .wbtns button:hover{background:#ffffff24}
+[data-theme="dark"] .field,[data-theme="dark"] .dd-btn,[data-theme="dark"] .dd-list,[data-theme="dark"] .sbtn.ghost,[data-theme="dark"] .mbox,[data-theme="dark"] .rail{background:var(--card)}
+[data-theme="dark"] .dd-btn:hover{border-color:#3a4058}
+[data-theme="dark"] .nav:hover,[data-theme="dark"] .eye:hover,[data-theme="dark"] .dd-list li:hover{background:#ffffff0f}
+[data-theme="dark"] .nav.on{color:#fff;background:#ffffff14}
+[data-theme="dark"] .nav::before{background:#e8eaf2}
+[data-theme="dark"] .dd-list li[aria-selected="true"]::after{background:#e8eaf2}
+[data-theme="dark"] .opt,[data-theme="dark"] .ln{border-bottom-color:var(--line)}
+[data-theme="dark"] .sw{background:#2c3144}
+[data-theme="dark"] .sw.on{background:#6b7390}
+[data-theme="dark"] .tlist::-webkit-scrollbar-track{background:#1f2331}
+[data-theme="dark"] .tlist::-webkit-scrollbar-thumb,[data-theme="dark"] .lv-list::-webkit-scrollbar-thumb{background:#3a4058}
+[data-theme="dark"] .lv-head .cnt{background:#ffffff14}
+[data-theme="dark"] .toast{background:#272b3b}
+[data-theme="dark"] .card{box-shadow:none}
+[data-theme="dark"] .dd-list::-webkit-scrollbar-track{background:#1f2331}
+[data-theme="dark"] .dd-list::-webkit-scrollbar-thumb{background:#3a4058}
+.theming,.theming *{transition:background-color .3s ease,color .3s ease,border-color .3s ease!important}
+@media (prefers-reduced-motion:reduce){*{transition-duration:.01ms!important;animation:none!important}}
+</style>
 </head>
 <body>
-    <div id="root"></div>
-    
-    <script type="text/babel">
-        const { useState } = React;
+<div class="app" id="app">
+
+  <section class="login" id="login">
+    <div class="wbtns"><button class="min" aria-label="Minimize">&minus;</button><button class="x" aria-label="Close">&times;</button></div>
+    <h1>HAVE</h1>
+    <p class="sub" data-i18n="loginSub">Enter your license key<br>to continue.</p>
+    <div class="msg" id="msg" role="alert" data-i18n="invalid">Invalid license key.</div>
+    <div class="pw">
+      <input class="field" id="key" type="password" placeholder="License key" data-ph="1" autocomplete="off" spellcheck="false" aria-label="License key">
+      <button class="eye" id="eye" type="button" aria-label="Show license key">
+        <svg class="see" viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+        <svg class="off" viewBox="0 0 24 24"><path d="M3 3l18 18M10.6 6.1A9.8 9.8 0 0 1 12 6c6.4 0 10 6 10 6a17 17 0 0 1-3.1 3.8M6.6 7.6C3.9 9.3 2 12 2 12s3.6 6 10 6c1.5 0 2.8-.3 4-.8M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>
+      </button>
+    </div>
+        <button class="lbtn" id="loginBtn"><span id="loginTxt">Login</span><span class="track"></span></button>
+  </section>
+
+  <div class="shell" id="shell">
+    <nav class="rail" aria-label="Menu">
+      <button class="nav on" data-tab="spoofer" aria-label="Spoofer" title="Spoofer">
+        <svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 4.500 3.200 7.700 8 9 4.800-1.300 8-4.500 8-9V6l-8-3z"/></svg>
+      </button>
+      <button class="nav" data-tab="device" aria-label="Device" title="Device">
+        <svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="11" rx="2"/><path d="M8 20h8M12 16v4"/></svg>
+      </button>
+      <button class="nav" data-tab="log" aria-label="Log" title="Log">
+        <svg viewBox="0 0 24 24"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></svg>
+      </button>
+      <button class="nav" data-tab="settings" aria-label="Settings" title="Settings">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+      </button>
+      <div class="grow"></div>
+      <div class="ver">V1.0</div>
+    </nav>
+
+    <div class="main">
+      <header class="top">
+        <h1 id="title">Spoofer</h1>
         
-        const Gift = (props) => (
-            <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="8" width="18" height="4" rx="1"/>
-                <rect x="3" y="12" width="18" height="9" rx="1"/>
-                <path d="M12 8v13"/>
-                <path d="M19 12h2"/>
-                <path d="M3 12h2"/>
-            </svg>
-        );
-        
-        const Sparkles = (props) => (
-            <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
-                <path d="M5 3v4"/>
-                <path d="M19 17v4"/>
-                <path d="M3 5h4"/>
-                <path d="M17 19h4"/>
-            </svg>
-        );
-        
-        const ArrowLeft = (props) => (
-            <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="19" y1="12" x2="5" y2="12"/>
-                <polyline points="12 19 5 12 12 5"/>
-            </svg>
-        );
-        
-        const Copy = (props) => (
-            <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-            </svg>
-        );
-        
-        const Check = (props) => (
-            <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="20 6 9 17 4 12"/>
-            </svg>
-        );
+        <div class="wbtns"><button class="min" aria-label="Minimize">&minus;</button><button class="x" aria-label="Close">&times;</button></div>
+      </header>
 
-        const Package = (props) => (
-            <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M16.5 9.4 7.55 4.24"/>
-                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-                <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
-                <line x1="12" y1="22.08" x2="12" y2="12"/>
-            </svg>
-        );
-
-        const initialCodes = {
-          1: ['CODE-X7K9M2','CODE-P4J8N1','CODE-W3Q6R5','CODE-Z8L2H9','CODE-B5V7C4','CODE-F9T3K1','CODE-M6D8P2','CODE-Y1N4J7','CODE-R3S9W6','CODE-H7G2L5','CODE-K4X8T1','CODE-N9C6V3','CODE-Q2M7P8','CODE-W5J1R4','CODE-L8F3H9','CODE-T6B2N7','CODE-P1K9D5','CODE-V4R8M2','CODE-C7W3J6','CODE-G9L5T1','CODE-J2N8P4','CODE-X6H1K9','CODE-M3F7V5','CODE-R8D2W6','CODE-K1T4N9','CODE-L5P8C3','CODE-W9J6H2','CODE-B4M1R7','CODE-N7V3K5','CODE-T2G8D1','CODE-H6C4P9','CODE-F1L7M3','CODE-P9K2J8','CODE-V5W6N4','CODE-R3T7H1','CODE-M8D5K9','CODE-J4C1P6','CODE-L7N3W2','CODE-K9H8T5','CODE-G2V4R1'],
-          2: ['CODE-3W-A1B2C3','CODE-3W-D4E5F6','CODE-3W-G7H8I9','CODE-3W-J1K2L3','CODE-3W-M4N5O6','CODE-3W-P7Q8R9','CODE-3W-S1T2U3','CODE-3W-V4W5X6','CODE-3W-Y7Z8A9','CODE-3W-B1C2D3','CODE-3W-E4F5G6','CODE-3W-H7I8J9','CODE-3W-K1L2M3','CODE-3W-N4O5P6','CODE-3W-Q7R8S9','CODE-3W-T1U2V3','CODE-3W-W4X5Y6','CODE-3W-Z7A8B9','CODE-3W-C1D2E3','CODE-3W-F4G5H6'],
-          3: ['CODE-5W-QW1ER2','CODE-5W-TY3UI4','CODE-5W-OP5AS6','CODE-5W-DF7GH8','CODE-5W-JK9LZ1','CODE-5W-XC2VB3','CODE-5W-NM4QW5','CODE-5W-ER6TY7','CODE-5W-UI8OP9','CODE-5W-AS1DF2','CODE-5W-GH3JK4','CODE-5W-LZ5XC6','CODE-5W-VB7NM8','CODE-5W-PL9OK0','CODE-5W-IJ1UH2','CODE-5W-YG3TF4','CODE-5W-RD5ES6','CODE-5W-WA7QZ8','CODE-5W-SX9DC0','CODE-5W-FV1GB2','CODE-5W-HN3JM4','CODE-5W-KL5PO6','CODE-5W-IU7YT8','CODE-5W-RE9WQ1','CODE-5W-ZA2XS3'],
-          4: ['CODE-10W-MN1BV2','CODE-10W-CX3ZA4','CODE-10W-SD5FG6','CODE-10W-HJ7KL8','CODE-10W-QW9ER0','CODE-10W-TY1UI2','CODE-10W-OP3AS4','CODE-10W-DF5GH6','CODE-10W-JK7LM8','CODE-10W-NB9VC0','CODE-10W-XZ1AQ2','CODE-10W-WS3ED4','CODE-10W-RF5TG6','CODE-10W-YH7UJ8','CODE-10W-IK9OL0','CODE-10W-PM1QN2','CODE-10W-WB3EC4','CODE-10W-RV5TF6','CODE-10W-YD7UG8','CODE-10W-IH9OJ0','CODE-10W-PK1LM2','CODE-10W-NZ3XC4','CODE-10W-VB5AS6'],
-          5: ['CODE-20W-ZX1CV2','CODE-20W-BN3MQ4','CODE-20W-WE5RT6','CODE-20W-YU7IO8','CODE-20W-PA9SD0','CODE-20W-FG1HJ2','CODE-20W-KL3ZX4','CODE-20W-CV5BN6','CODE-20W-MQ7WE8','CODE-20W-RT9YU0','CODE-20W-IO1PA2','CODE-20W-SD3FG4','CODE-20W-HJ5KL6','CODE-20W-PO7IU8','CODE-20W-YT9RE0','CODE-20W-WQ1AS2','CODE-20W-DF3GH4','CODE-20W-JK5LM6','CODE-20W-NB7VC8','CODE-20W-XZ9QW0','CODE-20W-ER1TY2','CODE-20W-UI3OP4']
-        };
-
-        const products = [
-          { id: 1, name: '[1만원] Roblox 기프트 카드', price: '₩10,000', robux: '800 Robux', image: 'https://images.rbxcdn.com/d572cc8714e0ec771ad8268977880ddf.png' },
-          { id: 2, name: '[3만원] Roblox 기프트 카드', price: '₩30,000', robux: '2,400 Robux', image: 'https://images.rbxcdn.com/d572cc8714e0ec771ad8268977880ddf.png' },
-          { id: 3, name: '[5만원] Roblox 기프트 카드', price: '₩50,000', robux: '4,500 Robux', image: 'https://images.rbxcdn.com/d572cc8714e0ec771ad8268977880ddf.png' },
-          { id: 4, name: '[10만원] Roblox 기프트 카드', price: '₩100,000', robux: '10,000 Robux', image: 'https://images.rbxcdn.com/d572cc8714e0ec771ad8268977880ddf.png' },
-          { id: 5, name: '[20만원] Roblox 기프트 카드', price: '₩200,000', robux: '22,500 Robux', image: 'https://images.rbxcdn.com/d572cc8714e0ec771ad8268977880ddf.png' }
-        ];
-
-        function RobloxGiftSite() {
-          const [selectedProduct, setSelectedProduct] = useState(null);
-          const [codeInput, setCodeInput] = useState('');
-          const [isLoading, setIsLoading] = useState(false);
-          const [giftCode, setGiftCode] = useState('');
-          const [copied, setCopied] = useState(false);
-          const [error, setError] = useState('');
-          const [userIP, setUserIP] = useState('');
-          const [usedCodes, setUsedCodes] = useState({});
-          const [codesByProduct, setCodesByProduct] = useState(initialCodes);
-
-          // IP 가져오기
-          React.useEffect(() => {
-            fetch('https://api.ipify.org?format=json')
-              .then(res => res.json())
-              .then(data => setUserIP(data.ip))
-              .catch(() => setUserIP('unknown-' + Math.random().toString(36).substr(2, 9)));
-          }, []);
-
-          const getStock = (productId) => {
-            return codesByProduct[productId]?.length || 0;
-          };
-
-          const generateGiftCode = () => {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-            const length = Math.floor(Math.random() * 4) + 8;
-            let code = 'RBX';
-            for (let i = 0; i < length; i++) {
-              code += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            return code;
-          };
-
-          const handleConfirm = () => {
-            if (!codeInput.trim()) return;
-            
-            const code = codeInput.trim();
-            // 유효한 코드인지 확인 (현재 남아있는 코드에서)
-            const validCodes = codesByProduct[selectedProduct.id] || [];
-            
-            if (!validCodes.includes(code)) {
-              setError('유효하지 않은 코드입니다. 다시 확인해주세요.');
-              return;
-            }
-            
-            // 해당 IP가 이미 코드를 사용했는지 확인
-            if (usedCodes[userIP] && usedCodes[userIP].length > 0) {
-              setError('이미 코드를 사용하셨습니다. IP당 1회만 사용 가능합니다.');
-              return;
-            }
-            
-            setError('');
-            setIsLoading(true);
-            const loadingTime = Math.floor(Math.random() * 14000) + 6000;
-            
-            setTimeout(() => {
-              // 코드 사용 기록
-              setUsedCodes(prev => ({
-                ...prev,
-                [userIP]: [...(prev[userIP] || []), code]
-              }));
-              
-              // 해당 제품에서 사용된 코드 제거 (재고 감소)
-              setCodesByProduct(prev => ({
-                ...prev,
-                [selectedProduct.id]: prev[selectedProduct.id].filter(c => c !== code)
-              }));
-              
-              setGiftCode(generateGiftCode());
-              setIsLoading(false);
-            }, loadingTime);
-          };
-
-          const handleProductClick = (product) => {
-            setSelectedProduct(product);
-            setCodeInput('');
-            setGiftCode('');
-            setError('');
-          };
-
-          const handleBack = () => {
-            setSelectedProduct(null);
-            setCodeInput('');
-            setGiftCode('');
-            setError('');
-          };
-
-          const copyToClipboard = () => {
-            navigator.clipboard.writeText(giftCode);
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2000);
-          };
-
-          const getStockColor = (stock) => {
-            if (stock >= 30) return 'from-green-500 to-emerald-500';
-            if (stock >= 20) return 'from-yellow-500 to-amber-500';
-            if (stock >= 10) return 'from-orange-500 to-red-500';
-            return 'from-red-500 to-pink-500';
-          };
-
-          if (selectedProduct) {
-            const stock = getStock(selectedProduct.id);
-            return (
-              <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 text-white p-4 md:p-8 overflow-hidden relative">
-                {/* Animated background stars - falling like snow */}
-                <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                  {[...Array(30)].map((_, i) => (
-                    <div
-                      key={i}
-                      className="absolute w-1 h-1 bg-white rounded-full animate-fall"
-                      style={{
-                        left: `${Math.random() * 100}%`,
-                        top: `-${Math.random() * 20}%`,
-                        animationDuration: `${Math.random() * 3 + 2}s`,
-                        animationDelay: `${Math.random() * 5}s`,
-                        opacity: Math.random() * 0.7 + 0.3
-                      }}
-                    ></div>
-                  ))}
-                  
-                  <div className="absolute w-96 h-96 bg-purple-600 rounded-full blur-3xl opacity-20 -top-48 -left-48 animate-pulse"></div>
-                  <div className="absolute w-96 h-96 bg-blue-600 rounded-full blur-3xl opacity-20 -bottom-48 -right-48 animate-pulse"></div>
-                  <div className="absolute w-64 h-64 bg-pink-500 rounded-full blur-3xl opacity-10 top-1/2 left-1/2 animate-pulse" style={{animationDelay: '0.7s'}}></div>
-                </div>
-
-                <style>{`
-                  @keyframes fall {
-                    0% {
-                      transform: translateY(0) translateX(0);
-                    }
-                    100% {
-                      transform: translateY(100vh) translateX(${Math.random() * 100 - 50}px);
-                    }
-                  }
-                  .animate-fall {
-                    animation: fall linear infinite;
-                  }
-                `}</style>
-
-                <div className="max-w-2xl mx-auto relative z-10">
-                  <button 
-                    onClick={handleBack}
-                    className="mb-8 px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-xl backdrop-blur-sm transition-all shadow-lg shadow-purple-500/50 flex items-center gap-2 group"
-                  >
-                    <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-                    돌아가기
-                  </button>
-
-                  <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-2xl rounded-3xl p-8 shadow-2xl border border-white/20 relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-purple-500/30 to-transparent rounded-full blur-3xl"></div>
-                    
-                    <div className="relative z-10">
-                      <div className="flex items-center justify-center mb-6">
-                        <div className="bg-gradient-to-r from-purple-500 to-blue-500 p-3 rounded-2xl shadow-lg shadow-purple-500/50">
-                          <Gift className="w-8 h-8" />
-                        </div>
-                      </div>
-
-                      <h2 className="text-3xl md:text-4xl font-bold mb-3 text-center bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
-                        {selectedProduct.name}
-                      </h2>
-                      
-                      <div className="flex items-center justify-center gap-4 mb-8">
-                        <p className="text-purple-300 text-lg">{selectedProduct.robux}</p>
-                        <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r ${getStockColor(stock)} shadow-lg`}>
-                          <Package className="w-4 h-4 text-white" />
-                          <span className="text-sm font-bold text-white">재고: {stock}개</span>
-                        </div>
-                      </div>
-
-                      {!isLoading && !giftCode && (
-                        <>
-                          <div className="mb-6 text-center">
-                            <p className="text-lg text-gray-300 mb-2">발급된 코드를 입력해주세요</p>
-                            <p className="text-sm text-gray-400">아래 인증 코드를 입력하시면 기프트 카드가 발급됩니다</p>
-                          </div>
-
-                          <div className="mb-6">
-                            <label className="block text-sm font-medium mb-3 text-gray-300">Code</label>
-                            <input
-                              type="text"
-                              value={codeInput}
-                              onChange={(e) => {
-                                setCodeInput(e.target.value);
-                                setError('');
-                              }}
-                              className="w-full px-6 py-4 bg-white/5 border-2 border-purple-500/30 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 transition-all backdrop-blur-sm text-lg"
-                              placeholder="코드를 입력하세요..."
-                              onKeyPress={(e) => e.key === 'Enter' && handleConfirm()}
-                            />
-                            {error && (
-                              <p className="mt-2 text-red-400 text-sm">{error}</p>
-                            )}
-                          </div>
-
-                          <button
-                            onClick={handleConfirm}
-                            disabled={!codeInput.trim()}
-                            className="w-full py-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 disabled:from-gray-600 disabled:to-gray-600 rounded-xl font-bold text-lg transition-all shadow-xl shadow-purple-500/50 hover:shadow-purple-500/70 hover:scale-[1.02] disabled:scale-100 disabled:cursor-not-allowed"
-                          >
-                            확인
-                          </button>
-                        </>
-                      )}
-
-                      {isLoading && (
-                        <div className="text-center py-12">
-                          <div className="relative inline-block mb-6">
-                            <div className="w-20 h-20 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin"></div>
-                            <Sparkles className="w-8 h-8 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-purple-400 animate-pulse" />
-                          </div>
-                          <p className="text-2xl font-bold mb-2 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">제품 준비중...</p>
-                          <p className="text-gray-400">기프트 카드를 생성하고 있습니다</p>
-                        </div>
-                      )}
-
-                      {giftCode && (
-                        <div className="text-center py-8">
-                          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full mb-6 animate-bounce shadow-lg shadow-green-500/50">
-                            <Check className="w-10 h-10" />
-                          </div>
-                          <p className="text-2xl font-bold mb-6 bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">발급 완료!</p>
-                          
-                          <div className="bg-gradient-to-r from-purple-900/50 to-blue-900/50 backdrop-blur-sm rounded-2xl p-6 border-2 border-purple-500/50 mb-4">
-                            <p className="text-sm text-gray-400 mb-2">기프트 카드 코드</p>
-                            <div className="flex items-center justify-center gap-3">
-                              <p className="text-3xl font-mono font-bold tracking-wider text-transparent bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text">{giftCode}</p>
-                              <button
-                                onClick={copyToClipboard}
-                                className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-all"
-                                title="복사"
-                              >
-                                {copied ? <Check className="w-5 h-5 text-green-400" /> : <Copy className="w-5 h-5" />}
-                              </button>
-                            </div>
-                          </div>
-                          
-                          <p className="text-sm text-gray-400">Roblox 웹사이트에서 코드를 사용하세요</p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            );
-          }
-
-          return (
-            <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 text-white p-4 md:p-8 overflow-hidden relative">
-              {/* Animated background - falling stars like snow */}
-              <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                {[...Array(50)].map((_, i) => (
-                  <div
-                    key={i}
-                    className="absolute w-1 h-1 bg-white rounded-full animate-fall"
-                    style={{
-                      left: `${Math.random() * 100}%`,
-                      top: `-${Math.random() * 20}%`,
-                      animationDuration: `${Math.random() * 3 + 3}s`,
-                      animationDelay: `${Math.random() * 5}s`,
-                      opacity: Math.random() * 0.7 + 0.3
-                    }}
-                  ></div>
-                ))}
-                
-                <div className="absolute w-96 h-96 bg-purple-600 rounded-full blur-3xl opacity-20 -top-48 -left-48 animate-pulse"></div>
-                <div className="absolute w-96 h-96 bg-blue-600 rounded-full blur-3xl opacity-20 -bottom-48 -right-48 animate-pulse"></div>
-                <div className="absolute w-80 h-80 bg-pink-500 rounded-full blur-3xl opacity-15 top-1/3 right-1/4 animate-pulse" style={{animationDelay: '0.5s'}}></div>
-              </div>
-
-              <style>{`
-                @keyframes fall {
-                  0% {
-                    transform: translateY(0) translateX(0);
-                  }
-                  100% {
-                    transform: translateY(100vh) translateX(${Math.random() * 100 - 50}px);
-                  }
-                }
-                .animate-fall {
-                  animation: fall linear infinite;
-                }
-              `}</style>
-
-              <div className="max-w-6xl mx-auto relative z-10">
-                <div className="text-center mb-12">
-                  <div className="inline-flex items-center justify-center mb-6">
-                    <div className="bg-gradient-to-r from-purple-600 to-blue-600 p-4 rounded-3xl shadow-2xl shadow-purple-500/50 animate-pulse">
-                      <Gift className="w-12 h-12" />
-                    </div>
-                  </div>
-                  <h1 className="text-5xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
-                    Roblox 기프트 카드
-                  </h1>
-                  <p className="text-xl text-gray-400">원하는 상품을 선택하세요</p>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {products.map((product, index) => {
-                    const stock = getStock(product.id);
-                    return (
-                    <div
-                      key={product.id}
-                      onClick={() => handleProductClick(product)}
-                      className="group cursor-pointer bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl rounded-3xl p-6 shadow-2xl border border-white/20 hover:border-purple-500/50 transition-all hover:scale-105 hover:shadow-purple-500/50 relative overflow-hidden"
-                      style={{animationDelay: `${index * 0.1}s`}}
-                    >
-                      <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-500/20 to-transparent rounded-full blur-2xl group-hover:scale-150 transition-transform"></div>
-                      
-                      {/* 재고 표시 배지 */}
-                      <div className="absolute top-4 right-4 z-20">
-                        <div className={`flex items-center gap-1 px-3 py-1.5 rounded-full bg-gradient-to-r ${getStockColor(stock)} shadow-lg`}>
-                          <Package className="w-4 h-4 text-white" />
-                          <span className="text-sm font-bold text-white">{stock}개</span>
-                        </div>
-                      </div>
-                      
-                      <div className="relative z-10">
-                        <div className="mb-4 overflow-hidden rounded-2xl shadow-lg">
-                          <img 
-                            src={product.image} 
-                            alt={product.name}
-                            className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
-                          />
-                        </div>
-                        
-                        <div className="flex items-center gap-2 mb-3">
-                          <Sparkles className="w-5 h-5 text-purple-400" />
-                          <h3 className="text-xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-                            {product.name}
-                          </h3>
-                        </div>
-                        
-                        <div className="flex items-center justify-between">
-                          <p className="text-2xl font-bold text-white">{product.price}</p>
-                          <p className="text-sm text-purple-300">{product.robux}</p>
-                        </div>
-                        
-                        <div className="mt-4 py-3 bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl text-center font-bold group-hover:from-purple-700 group-hover:to-blue-700 transition-all shadow-lg">
-                          선택하기
-                        </div>
-                      </div>
-                    </div>
-                  )})}
-                </div>
-              </div>
+      <div class="body" id="body">
+        <section class="pane on" id="p-spoofer">
+          <div class="card status">
+            <span class="dot"></span>
+            <div><div class="t">Have Spoofer</div></div>
+            <div class="dd" id="dd">
+              <button class="dd-btn" id="ddBtn" aria-haspopup="listbox" aria-expanded="false">
+                <span id="ddVal">Regular</span>
+                <svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+              </button>
+              <ul class="dd-list" id="ddList" role="listbox">
+                <li role="option" data-v="Regular" aria-selected="true">Regular</li>
+                <li role="option" data-v="UEFI" aria-selected="false">UEFI</li>
+              </ul>
             </div>
-          );
-        }
+          </div>
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<RobloxGiftSite />);
-    </script>
+          <div class="card left">
+            <div class="kv"><span data-i18n="motherboard">Motherboard</span><div class="dd sm" id="ddMb"><button class="dd-btn" aria-haspopup="listbox" aria-expanded="false"><span>MSI</span><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button><ul class="dd-list" role="listbox"><li role="option" data-v="ASUS" aria-selected="false">ASUS</li><li role="option" data-v="MSI" aria-selected="true">MSI</li><li role="option" data-v="GIGABYTE" aria-selected="false">GIGABYTE</li><li role="option" data-v="ASRock" aria-selected="false">ASRock</li><li role="option" data-v="Biostar" aria-selected="false">Biostar</li><li role="option" data-v="Lenovo" aria-selected="false">Lenovo</li><li role="option" data-v="HP" aria-selected="false">HP</li><li role="option" data-v="Dell" aria-selected="false">Dell</li></ul></div></div>
+            <div class="kv"><span data-i18n="selectedOption">Selected option</span><span id="selOpt">Regular</span></div>
+            <div class="actions">
+              <button class="btn" id="start" data-i18n="start">Start Spoofing</button>
+            </div>
+          </div>
+
+          <div class="card right">
+            <div class="tlist">
+              <div class="opt"><span data-i18n="n1">NETWORK SPOOF</span><div class="sw on" role="switch" aria-checked="true" tabindex="0"></div></div>
+              <div class="opt off"><span data-i18n="n2">DISK SPOOF</span><div class="sw" role="switch" aria-checked="false" tabindex="0"></div></div>
+              <div class="opt off"><span data-i18n="n3">CPU SPOOF</span><div class="sw" role="switch" aria-checked="false" tabindex="0"></div></div>
+              <div class="opt off"><span data-i18n="n4">TPM SPOOF</span><div class="sw" role="switch" aria-checked="false" tabindex="0"></div></div>
+              <div class="opt off"><span data-i18n="n5">MOTHERBOARD SPOOF</span><div class="sw" role="switch" aria-checked="false" tabindex="0"></div></div>
+              <div class="opt off"><span data-i18n="n6">WINDOWS SPOOF</span><div class="sw" role="switch" aria-checked="false" tabindex="0"></div></div>
+              <div class="opt off"><span data-i18n="n7">REGISTRY SPOOF</span><div class="sw" role="switch" aria-checked="false" tabindex="0"></div></div>
+              <div class="opt off"><span data-i18n="n8">CLEANER</span><div class="sw" role="switch" aria-checked="false" tabindex="0"></div></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="pane" id="p-device">
+          <div class="card dev">
+            <div class="kv"><span data-i18n="board">Board</span><span id="devBoard">MSI</span></div>
+            <div class="kv"><span data-i18n="vendor">Vendor</span><span id="devVendor">Micro-Star International Co., Ltd.</span></div>
+            <div class="kv"><span data-i18n="mode">Mode</span><span id="devMode">Regular</span></div>
+          </div>
+        </section>
+
+        <!-- 로그 보기 -->
+        <section class="pane" id="p-settings">
+          <div class="card dev">
+            <div class="kv"><span data-i18n="language">Language</span>
+              <div class="dd sm" id="ddLang"><button class="dd-btn" aria-haspopup="listbox" aria-expanded="false"><span>English</span><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button>
+                <ul class="dd-list" role="listbox"><li role="option" data-v="en" aria-selected="true">English</li><li role="option" data-v="ko" aria-selected="false">한국어</li></ul></div></div>
+            <div class="kv"><span data-i18n="theme">Theme</span>
+              <div class="dd sm" id="ddTheme"><button class="dd-btn" aria-haspopup="listbox" aria-expanded="false"><span>White mode</span><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button>
+                <ul class="dd-list" role="listbox"><li role="option" data-v="light" aria-selected="true" data-i18n="white">White mode</li><li role="option" data-v="dark" aria-selected="false" data-i18n="dark">Dark mode</li></ul></div></div>
+            <div class="kv"><span data-i18n="license">License</span><span id="licLeft">-</span></div>
+            <div class="kv"><span data-i18n="account">Account</span><button class="sbtn ghost" id="logoutBtn" data-i18n="logout">Logout</button></div>
+          </div>
+        </section>
+
+        <section class="pane" id="p-log"><div class="card logcard">
+          <div class="lv-head">
+            <h2 data-i18n="log">Log</h2><span class="cnt" id="cnt">0</span><span class="sp"></span>
+            <button class="sbtn ghost" id="clearLog" data-i18n="clear">Clear</button>
+          </div>
+          <div class="lv-list" id="lvList"></div>
+        </div></section>
+      </div>
+    </div>
+  </div>
+  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+    <div class="mbox">
+      <div class="mt" id="mTitle">Spoofing has started.</div>
+      <div class="ms" id="mSub">Go to the Log screen?</div>
+      <div class="mb"><button class="sbtn ghost" id="mNo" data-i18n="no">No</button><button class="sbtn fill" id="mYes" data-i18n="yes">Yes</button></div>
+    </div>
+  </div>
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const send = m => { try{ window.chrome && window.chrome.webview && window.chrome.webview.postMessage(m); }catch(e){} };
+  const two = n => String(n).padStart(2,'0');
+  const clock = () => { const d=new Date(); return two(d.getHours())+':'+two(d.getMinutes())+':'+two(d.getSeconds()); };
+  const D=window.desk||{};
+  const NATIVE=!!(window.chrome&&window.chrome.webview&&!window.desk);
+  if(NATIVE) document.documentElement.classList.add('native');
+  const host={
+    close(){ D.close?D.close():send({type:'close'}); },
+    minimize(){ D.minimize?D.minimize():send({type:'minimize'}); },
+    resize(w,h,ms){ D.resize?D.resize(w,h):send({type:'resize',w:w,h:h,ms:ms||0}); }
+  };
+  let tt; let lang='en';
+  const I18N={"en": {"spoofer": "Spoofer", "device": "Device", "log": "Log", "settings": "Settings", "loginSub": "Enter your license key<br>to continue.", "licenseKey": "License key", "invalid": "Invalid license key.", "login": "Login", "verifying": "Verifying...", "verified": "Verified", "showKey": "Show license key", "hideKey": "Hide license key", "motherboard": "Motherboard", "selectedOption": "Selected option", "start": "Start Spoofing", "n1": "NETWORK SPOOF", "n2": "DISK SPOOF", "n3": "CPU SPOOF", "n4": "TPM SPOOF", "n5": "MOTHERBOARD SPOOF", "n6": "WINDOWS SPOOF", "n7": "REGISTRY SPOOF", "n8": "CLEANER", "board": "Board", "vendor": "Vendor", "mode": "Mode", "clear": "Clear", "noLogs": "No logs yet.", "confirm1": "This action cannot be undone.", "confirm1sub": "Do you want to continue?", "started": "Spoofing has started.", "gotoLog": "Go to the Log screen?", "yes": "Yes", "no": "No", "language": "Language", "theme": "Theme", "white": "White mode", "dark": "Dark mode", "logMode": "Mode", "logBoard": "Motherboard", "logStarted": "Spoofing started", "logIn": "Logged in", "ok": "OK", "errExpired": "License expired.", "errBanned": "This key is banned.", "errBound": "Key is bound to another PC.", "license": "License", "account": "Account", "logout": "Logout", "logoutQ": "Log out?", "logoutSub": "The saved license on this PC will be removed.", "doneTitle": "Spoofing has been completed.", "doneSub": "Please restart your computer.", "on": "On", "off": "Off"}, "ko": {"spoofer": "스푸퍼", "device": "디바이스", "log": "로그", "settings": "설정", "loginSub": "라이선스 키를 입력하여<br>계속하세요.", "licenseKey": "라이선스 키", "invalid": "잘못된 라이선스 키입니다.", "login": "로그인", "verifying": "인증 중...", "verified": "인증 완료", "showKey": "라이선스 키 표시", "hideKey": "라이선스 키 숨기기", "motherboard": "마더보드", "selectedOption": "선택된 옵션", "start": "스푸핑 시작", "n1": "NETWORK SPOOF", "n2": "DISK SPOOF", "n3": "CPU SPOOF", "n4": "TPM SPOOF", "n5": "MOTHERBOARD SPOOF", "n6": "WINDOWS SPOOF", "n7": "REGISTRY SPOOF", "n8": "CLEANER", "board": "보드", "vendor": "제조사", "mode": "모드", "clear": "지우기", "noLogs": "아직 로그가 없습니다.", "confirm1": "이 작업은 되돌릴 수 없습니다.", "confirm1sub": "계속하시겠습니까?", "started": "스푸핑이 시작되었습니다.", "gotoLog": "로그 화면으로 이동할까요?", "yes": "예", "no": "아니요", "language": "언어", "theme": "테마", "white": "화이트 모드", "dark": "다크 모드", "logMode": "모드", "logBoard": "마더보드", "logStarted": "스푸핑 시작", "logIn": "로그인됨", "ok": "확인", "errExpired": "라이선스가 만료되었습니다.", "errBanned": "차단된 키입니다.", "errBound": "다른 PC에 등록된 키입니다.", "license": "라이선스", "account": "계정", "logout": "로그아웃", "logoutQ": "로그아웃할까요?", "logoutSub": "이 PC에 저장된 라이선스가 삭제됩니다.", "doneTitle": "스푸핑이 완료되었습니다.", "doneSub": "컴퓨터를 재시작해 주세요.", "on": "켜짐", "off": "꺼짐"}};
+  const t=k=>(I18N[lang]&&I18N[lang][k])||I18N.en[k]||k;
+  function toast(t){ const el=$('toast'); el.textContent=t; el.classList.add('show'); clearTimeout(tt); tt=setTimeout(()=>el.classList.remove('show'),1800); }
+
+  /* ---- 로그 ---- */
+  const logs=[], list=$('lvList');
+  function renderEmpty(){ list.innerHTML='<div class="empty">'+t('noLogs')+'</div>'; }
+  function addLog(text,type){
+    logs.push({t:clock(),text,type});
+    if(logs.length>200) logs.shift();
+    $('cnt').textContent=logs.length;
+    if(logs.length===1) list.innerHTML='';
+    const row=document.createElement('div'); row.className='ln '+(type||'');
+    const tm=document.createElement('span'); tm.className='tm'; tm.textContent='['+logs[logs.length-1].t+']';
+    const tx=document.createElement('span'); tx.className='tx'; tx.textContent=text;
+    row.append(tm,tx); list.appendChild(row); list.scrollTop=list.scrollHeight;
+  }
+  renderEmpty();
+  $('clearLog').addEventListener('click',()=>{ logs.length=0; $('cnt').textContent=0; renderEmpty(); });
+
+  /* ---- 로그인 ---- */
+  const PASS='1234', key=$('key'), btn=$('loginBtn'), txt=$('loginTxt'), msg=$('msg');
+  let busy=false;
+  let hostRes=null, resCb=null;
+  if(window.chrome&&window.chrome.webview){
+    window.chrome.webview.addEventListener('message',e=>{
+      const d=e.data||{};
+      if(d.type==='loginResult'){ hostRes=d; if(resCb) resCb(); }
+      else if(d.type==='license'){ setLic(d.left); }
+    });
+  }
+  function setLic(v){ const el=$('licLeft'); if(el) el.textContent=v||'-'; }
+  const ERR={expired:'errExpired',banned:'errBanned',bound:'errBound'};
+  function login(){
+    if(busy) return;
+    busy=true; msg.classList.remove('show'); key.classList.remove('err');
+    btn.disabled=true; key.disabled=true; txt.textContent=t('verifying'); btn.classList.add('load');
+    const ms=2000+Math.random()*2000;                 // 2~4초
+    let timerDone=false, finished=false; hostRes=null;
+    const done=()=>{
+      if(finished||!timerDone) return;
+      let res;
+      if(NATIVE){ if(!hostRes) return; res=hostRes; } else { res={ok:key.value===PASS}; }   // 브라우저 미리보기는 1234
+      finished=true; resCb=null; btn.classList.remove('load');
+      if(res.ok){
+        setLic(res.left);
+        txt.textContent=t('verified');
+        setTimeout(()=>{
+          host.resize(NATIVE?720:752,NATIVE?510:542,700);
+          $('login').classList.add('leave');
+          setTimeout(()=>{ $('app').classList.add('open'); $('shell').classList.add('show'); },60);
+          addLog('Logged in','ok');
+        },350);
+      }else{
+        const k=ERR[res.code]||'invalid';
+        msg.dataset.i18n=k; msg.innerHTML=t(k);
+        txt.textContent=t('login'); btn.disabled=false; key.disabled=false; busy=false;
+        msg.classList.add('show'); void key.offsetWidth; key.classList.add('err'); key.select(); key.focus();
+      }
+    };
+    resCb=done;
+    setTimeout(()=>{ timerDone=true; done(); },ms);
+    if(NATIVE){
+      send({type:'login',key:key.value});
+      setTimeout(()=>{ if(!finished&&!hostRes){ hostRes={ok:false,code:'invalid'}; done(); } },15000);
+    }
+  }
+  btn.addEventListener('click',login);
+  key.addEventListener('keydown',e=>{ if(e.key==='Enter') login(); });
+  key.addEventListener('input',()=>{ key.classList.remove('err'); msg.classList.remove('show'); });
+  setTimeout(()=>key.focus(),50);
+  const eye=$('eye');
+  eye.addEventListener('mousedown',e=>e.preventDefault());
+  eye.addEventListener('click',()=>{ const show=key.type==='password'; key.type=show?'text':'password'; eye.classList.toggle('on',show); eye.setAttribute('aria-label',show?t('hideKey'):t('showKey')); });
+
+  /* ---- 탭 전환 ---- */
+  const tabs=['spoofer','device','log','settings']; let cur='spoofer', switching=false;
+  document.querySelectorAll('.nav[data-tab]').forEach(b=>b.addEventListener('click',()=>{
+    const next=b.dataset.tab; if(next===cur||switching) return;
+    switching=true;
+    const dir = tabs.indexOf(next)>tabs.indexOf(cur) ? 1 : -1;
+    const from=$('p-'+cur), to=$('p-'+next), title=$('title');
+    document.querySelectorAll('.nav[data-tab]').forEach(x=>x.classList.toggle('on',x===b));
+    from.style.setProperty('--dx',(dir*18)+'px'); to.style.setProperty('--dx',(dir*18)+'px');
+    from.classList.add('out'); title.classList.add('swap');
+    setTimeout(()=>{
+      from.classList.remove('on','out'); to.classList.add('on');
+      title.textContent = t(next); title.classList.remove('swap');
+      cur=next; switching=false;
+    },170);
+  }));
+
+  /* ---- 선택창 (Mode / Motherboard) ---- */
+  const BOARDS={ASUS:'ASUSTeK Computer Inc.',MSI:'Micro-Star International Co., Ltd.',GIGABYTE:'Gigabyte Technology Co., Ltd.',ASRock:'ASRock Incorporation',Biostar:'Biostar Microtech International Corp.',Lenovo:'LENOVO',HP:'HP',Dell:'Dell Inc.'};
+  const dds=[]; const closeAll=()=>dds.forEach(d=>d.close());
+  function makeDD(root,onPick){
+    const b=root.querySelector('.dd-btn'), val=b.querySelector('span'), items=[...root.querySelectorAll('li')], card=root.closest('.card');
+    const setOpen=o=>{ root.classList.toggle('open',o); b.setAttribute('aria-expanded',o); if(card) card.classList.toggle('raise',o); };
+    b.addEventListener('click',e=>{ e.stopPropagation(); const o=!root.classList.contains('open'); closeAll(); setOpen(o); });
+    root.querySelector('.dd-list').addEventListener('click',e=>e.stopPropagation());
+    items.forEach(li=>li.addEventListener('click',e=>{ e.stopPropagation(); items.forEach(x=>x.setAttribute('aria-selected',x===li)); val.textContent=li.textContent; setOpen(false); onPick(li.dataset.v); }));
+    dds.push({close:()=>setOpen(false)});
+  }
+  makeDD($('dd'),v=>{ ['selOpt','devMode'].forEach(i=>$(i).textContent=v); addLog('Mode: '+v); });
+  makeDD($('ddMb'),v=>{ $('devBoard').textContent=v; $('devVendor').textContent=BOARDS[v]; addLog('Motherboard: '+v); });
+  function syncDD(){ document.querySelectorAll('.dd').forEach(r=>{ const sel=r.querySelector('li[aria-selected="true"]'); if(sel) r.querySelector('.dd-btn span').textContent=sel.textContent; }); }
+  function applyLang(){
+    document.documentElement.lang=lang;
+    document.querySelectorAll('[data-i18n]').forEach(el=>{ el.innerHTML=t(el.dataset.i18n); });
+    key.placeholder=t('licenseKey');
+    eye.setAttribute('aria-label',t(key.type==='password'?'showKey':'hideKey'));
+    document.querySelectorAll('.nav[data-tab]').forEach(n=>{ n.title=t(n.dataset.tab); n.setAttribute('aria-label',t(n.dataset.tab)); });
+    $('title').textContent=t(cur);
+    syncDD();
+    if(!logs.length) renderEmpty();
+  }
+  function setTheme(v){ const r=document.documentElement; r.classList.add('theming'); r.dataset.theme=(v==='dark')?'dark':'light'; setTimeout(()=>r.classList.remove('theming'),400); }
+  makeDD($('ddLang'),v=>{ lang=v; applyLang(); });
+  makeDD($('ddTheme'),v=>setTheme(v));
+  document.addEventListener('click',closeAll);
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeAll(); closeModal(); } });
+
+  /* ---- 토글 / 시작 ---- */
+  document.querySelectorAll('.tlist .sw').forEach(s=>{
+    const nm=()=>s.previousElementSibling.textContent;
+    const flip=()=>{ const on=s.classList.toggle('on'); s.setAttribute('aria-checked',on); s.parentElement.classList.toggle('off',!on); addLog(nm()+': '+(on?'On':'Off')); };
+    s.addEventListener('click',flip);
+    s.addEventListener('keydown',e=>{ if(e.key===' '||e.key==='Enter'){e.preventDefault();flip();} });
+  });
+  const modal=$('modal'); let stage=0;
+  const closeModal=()=>{ modal.classList.remove('show'); if(stage===3) $('start').disabled=false; };
+  function showModal(tk,sk,st){ const y=$('mYes'); $('mTitle').textContent=t(tk); $('mSub').textContent=t(sk); stage=st; $('mNo').style.display=(st===3)?'none':''; y.dataset.i18n=(st===3)?'ok':'yes'; y.textContent=t(y.dataset.i18n); modal.classList.add('show'); y.focus(); }
+  $('start').addEventListener('click',()=>showModal('confirm1','confirm1sub',1));
+  $('mNo').addEventListener('click',closeModal);
+  let runToken=0;
+  $('mYes').addEventListener('click',()=>{
+    closeModal();
+    if(stage===1){
+      const my=++runToken;
+      $('start').disabled=true;
+      addLog('Spoofing started ('+$('ddVal').textContent+' / '+$('ddMb').querySelector('.dd-btn span').textContent+')','ok');
+      setTimeout(()=>{ if(my===runToken) showModal('started','gotoLog',2); },260);
+      setTimeout(()=>{                                   // 5~7초 후
+        if(my!==runToken) return;
+        addLog('Driver loading...');
+        setTimeout(()=>{                                 // 4~9초 후
+          if(my!==runToken) return;
+          addLog('Spoofing completed','ok');
+          showModal('doneTitle','doneSub',3);
+        },4000+Math.random()*5000);
+      },5000+Math.random()*2000);
+    }else if(stage===2){
+      document.querySelector('.nav[data-tab="log"]').click();
+    }else if(stage===4){
+      doLogout();
+    }
+  });
+  $('logoutBtn').addEventListener('click',()=>showModal('logoutQ','logoutSub',4));
+  // 로그아웃: C++ 이 license.dat 를 지우고, 화면은 로그인으로 되돌아갑니다
+  function doLogout(){
+    runToken++; $('start').disabled=false;
+    send({type:'logout'});
+    document.documentElement.classList.remove('auto');
+    $('shell').classList.remove('show');
+    $('app').classList.remove('open');
+    host.resize(NATIVE?370:402,NATIVE?510:542,600);
+    busy=false; key.value=''; key.disabled=false; key.type='password'; eye.classList.remove('on');
+    btn.disabled=false; btn.classList.remove('load'); txt.textContent=t('login');
+    msg.classList.remove('show'); msg.dataset.i18n='invalid'; msg.innerHTML=t('invalid'); key.classList.remove('err');
+    setLic('-');
+    logs.length=0; $('cnt').textContent=0; renderEmpty();
+    setTimeout(()=>{ $('login').classList.remove('leave'); key.focus(); },300);
+    setTimeout(()=>{ if(cur!=='spoofer'){ const n=document.querySelector('.nav[data-tab="spoofer"]'); if(n) n.click(); } },700);
+  }
+  modal.addEventListener('click',e=>{ if(e.target===modal) closeModal(); });
+
+  /* ---- 창 버튼 / 드래그 ---- */
+  document.querySelectorAll('.wbtns .x').forEach(b=>b.addEventListener('click',()=>host.close()));
+  document.querySelectorAll('.wbtns .min').forEach(b=>b.addEventListener('click',()=>host.minimize()));
+  let drag=null;
+  document.addEventListener('mousedown',e=>{ if(e.target.closest('button,input,.dd,.sw,.card,.nav,.logview')) return; if(NATIVE){ send({type:'drag'}); return; } drag={x:e.screenX,y:e.screenY}; });
+  window.addEventListener('mousemove',e=>{ if(!drag) return; const dx=e.screenX-drag.x, dy=e.screenY-drag.y; drag={x:e.screenX,y:e.screenY}; send({type:'move',dx,dy}); if(window.desk&&desk.move) desk.move(dx,dy); });
+  window.addEventListener('mouseup',()=>drag=null);
+  if(document.documentElement.classList.contains('auto')){
+    $('app').classList.add('open'); $('shell').classList.add('show'); addLog('Logged in','ok');
+  }
+})();
+</script>
 </body>
 </html>
